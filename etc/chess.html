@@ -50,14 +50,15 @@ function run()
     timer_id = setInterval(interval, 1);
 }
 
-function interval(_f)
+function interval(_f, x, y)
 {
-    var xy = next_empty(_f);
-    while (xy !== null) {
+    var xy = next_empty(_f, x, y);
 
+    while ((xy = ) !== null) {
+        var f = array_clone(_f);
+        put(f, xy[0], xy[1]);
+        interval(f);
     }
-
-    var f = array_clone(_f);
 
     if (xy[0] === -1) {
         draw_field(f);
@@ -68,11 +69,22 @@ function interval(_f)
     interval(f);
 }
 
-function next_empty(__f)
+function next_xy(xy)
 {
-    for (var y = 0; y < max_y; _y++)
+    if (xy.x < (max_x  - 1))
     {
-        for (var x = 0; x < max_x; x++)
+        var ret = { 'x': xy.x + 1, 'y': xy.y };
+        return ret;
+    }
+
+}
+
+function next_empty(__f, x, y)
+{
+    x++;
+    for (; y < max_y; _y++)
+    {
+        for (; x < max_x; x++)
         {
             if (field(x, y) === STATE_EMPTY)
             {
@@ -198,7 +210,7 @@ function array_clone(a)
 <body>
 <h1>chess</h1>
 <div>
-<input type="button" value="next" onclick="interval(_field); return false;" />
+<input type="button" value="next" onclick="interval(_field, -1, 0); return false;" />
 </div>
 <canvas id="canv" width="1000" height="600"></canvas>
 </body>
