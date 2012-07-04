@@ -39,6 +39,7 @@ $(document).ready(function(){
     put(_field, 3, 4);
     draw_field(_field);
 
+
     //interval();
     //run();
 });
@@ -52,41 +53,44 @@ function run()
 
 function interval(_f, x, y)
 {
+    //$('#debug').text(x + ":" + y);
     var xy = next_empty(_f, x, y);
 
-    while ((xy = ) !== null) {
+    while (xy !== null) {
         var f = array_clone(_f);
         put(f, xy[0], xy[1]);
-        interval(f);
-    }
-
-    if (xy[0] === -1) {
         draw_field(f);
-        return;
+        interval(f, 0, 0);
+
+        xy = next_empty(_f, xy[0], xy[1]);
     }
 
-    put(f, xy[0], xy[1]);
-    interval(f);
+
 }
 
-function next_xy(xy)
+function next_xy(x, y)
 {
-    if (xy.x < (max_x  - 1))
+    if (x < (max_x  - 1))
     {
-        var ret = { 'x': xy.x + 1, 'y': xy.y };
-        return ret;
+        return [x + 1, y];
     }
 
+    if (y < (max_y - 1))
+    {
+        return [0, y + 1];
+    }
+
+    return null;
 }
 
-function next_empty(__f, x, y)
+function next_empty(_f, x, y)
 {
     x++;
-    for (; y < max_y; _y++)
+    for (; y < max_y; y++)
     {
         for (; x < max_x; x++)
         {
-            if (field(x, y) === STATE_EMPTY)
+            if (field(_f, x, y) === STATE_EMPTY)
             {
                 return [x, y];
             }
@@ -108,7 +112,7 @@ function dead_horizontal(_f, y)
 {
     for (var x = 0; x < max_x; x++)
     {
-        if (field(x, y) === STATE_EMPTY)
+        if (field(_f, x, y) === STATE_EMPTY)
         {
             set_field(_f, x, y, STATE_DEAD);
         }
@@ -119,7 +123,7 @@ function dead_vertical(_f, x)
 {
     for (var y = 0; y < max_y; y++)
     {
-        if (field(x, y) === STATE_EMPTY)
+        if (field(_f, x, y) === STATE_EMPTY)
         {
             set_field(_f, x, y, STATE_DEAD);
         }
@@ -134,7 +138,7 @@ function dead_slanting(_f, x, y)
     wy = y - 1;
     for ( ; wx >= 0 && wy >= 0; wx--, wy--)
     {
-        if (field(wx, wy) === STATE_EMPTY)
+        if (field(_f, wx, wy) === STATE_EMPTY)
         {
             set_field(_f, wx, wy, STATE_DEAD);
         }
@@ -144,7 +148,7 @@ function dead_slanting(_f, x, y)
     wy = y + 1;
     for ( ; wx < max_x && wy < max_y; wx++, wy++)
     {
-        if (field(wx, wy) === STATE_EMPTY)
+        if (field(_f, wx, wy) === STATE_EMPTY)
         {
             set_field(_f, wx, wy, STATE_DEAD);
         }
@@ -182,16 +186,16 @@ function serialize(f)
     return data;
 }
 
-function field(x, y)
+function field(_f, x, y)
 {
     var pos = x + (y * max_x);
-    return _field[pos];
+    return _f[pos];
 }
 
 function set_field(_f, x, y, state)
 {
     var pos = x + (y * max_x);
-    _field[pos] = state;
+    _f[pos] = state;
 }
 
 function array_clone(a)
@@ -209,6 +213,7 @@ function array_clone(a)
 </head>
 <body>
 <h1>chess</h1>
+<div id="debug"></div>
 <div>
 <input type="button" value="next" onclick="interval(_field, -1, 0); return false;" />
 </div>
