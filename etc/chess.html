@@ -51,6 +51,7 @@ function run()
     timer_id = setInterval(interval, 1);
 }
 
+var max = 0;
 function interval(_f, x, y)
 {
     //$('#debug').text(x + ":" + y);
@@ -59,13 +60,35 @@ function interval(_f, x, y)
     while (xy !== null) {
         var f = array_clone(_f);
         put(f, xy[0], xy[1]);
-        draw_field(f);
         interval(f, 0, 0);
 
         xy = next_empty(_f, xy[0], xy[1]);
     }
 
+    if (max <= count_queen(_f)) {
+        draw_field(_f);
+        max = count_queen(_f);
+        alert(tostring(_f));
+    }
+}
 
+function count_queen(f)
+{
+    var c = 0;
+    for (var i = 0, len = f.length; i < len; i++)
+    {
+        if (f[i] === STATE_PUT)
+        {
+            c++;
+        }
+    }
+
+    return c;
+}
+
+function tostring(f)
+{
+    return "";
 }
 
 function next_xy(x, y)
