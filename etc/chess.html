@@ -34,21 +34,26 @@ var _field = [
 $(document).ready(function(){
     canvas = $('#canv')[0];
     ctx = canvas.getContext('2d');
-    ctx.lineWidth = 1.0;
 
     put(2, 2);
     put(3, 4);
     draw_field();
 
-    timer_id = setInterval(interval, 100);
+    run();
 });
 
 var count = 0;
+function run()
+{
+    count = 0;
+    timer_id = setInterval(interval, 10);
+}
+
 function interval()
 {
     var xy = next_empty();
 
-    if (xy[0] === -1 || ++count > 100) {
+    if (xy[0] === -1 || ++count > 1000) {
         clearInterval(timer_id);
         return;
     }
@@ -84,7 +89,7 @@ function next_empty()
 
 function put(x, y)
 {
-    set_field(y, x, STATE_PUT)
+    set_field(x, y, STATE_PUT)
     dead_horizontal(y);
     dead_vertical(x);
     dead_slanting(x, y);
@@ -195,6 +200,9 @@ function array_clone(a)
 </head>
 <body>
 <h1>chess</h1>
+<div>
+<input type="button" value="next" onclick="run(); return false;" />
+</div>
 <canvas id="canv" width="1000" height="600"></canvas>
 </body>
 </html>
