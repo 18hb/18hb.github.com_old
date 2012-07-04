@@ -35,89 +35,86 @@ $(document).ready(function(){
     canvas = $('#canv')[0];
     ctx = canvas.getContext('2d');
 
-    put(2, 2);
-    put(3, 4);
-    draw_field();
+    put(_field, 2, 2);
+    put(_field, 3, 4);
+    draw_field(_field);
 
-    run();
+    //interval();
+    //run();
 });
 
 var count = 0;
 function run()
 {
     count = 0;
-    timer_id = setInterval(interval, 10);
+    timer_id = setInterval(interval, 1);
 }
 
-function interval()
+function interval(_f)
 {
-    var xy = next_empty();
+    var xy = next_empty(_f);
+    while (xy !== null) {
 
-    if (xy[0] === -1 || ++count > 1000) {
-        clearInterval(timer_id);
+    }
+
+    var f = array_clone(_f);
+
+    if (xy[0] === -1) {
+        draw_field(f);
         return;
     }
 
-    var prev = array_clone(_field);
-    put(xy[0], xy[1]);
-    draw_field();
-
-    _field = prev;
+    put(f, xy[0], xy[1]);
+    interval(f);
 }
 
-var _x = 0;
-var _y = 0;
-function next_empty()
+function next_empty(__f)
 {
-    for ( ; _y < max_y; _y++)
+    for (var y = 0; y < max_y; _y++)
     {
-        for ( ; _x < max_x; _x++)
+        for (var x = 0; x < max_x; x++)
         {
-            if (field(_x, _y) === STATE_EMPTY)
+            if (field(x, y) === STATE_EMPTY)
             {
-                var ret = [_x, _y]
-                _x++;
-                return ret;
+                return [x, y];
             }
         }
-        _x = 0;
+        x = 0;
     }
-    _y = 0;
-
-    return next_empty();
+    return null;
 }
 
-function put(x, y)
+function put(_f, x, y)
 {
-    set_field(x, y, STATE_PUT)
-    dead_horizontal(y);
-    dead_vertical(x);
-    dead_slanting(x, y);
+    set_field(_f, x, y, STATE_PUT)
+    dead_horizontal(_f, y);
+    dead_vertical(_f, x);
+    dead_slanting(_f, x, y);
 }
 
-function dead_horizontal(y)
+function dead_horizontal(_f, y)
 {
     for (var x = 0; x < max_x; x++)
     {
         if (field(x, y) === STATE_EMPTY)
         {
-            set_field(x, y, STATE_DEAD);
+            set_field(_f, x, y, STATE_DEAD);
         }
     }
 }
 
-function dead_vertical(x)
+function dead_vertical(_f, x)
 {
     for (var y = 0; y < max_y; y++)
     {
         if (field(x, y) === STATE_EMPTY)
         {
-            set_field(x, y, STATE_DEAD);
+            set_field(_f, x, y, STATE_DEAD);
         }
     }
 }
 
-function dead_slanting(x, y)
+function dead_slanting(_f, x, y)
 {
     var wx, wy ;
 
@@ -127,7 +124,7 @@ function dead_slanting(x, y)
     {
         if (field(wx, wy) === STATE_EMPTY)
         {
-            set_field(wx, wy, STATE_DEAD);
+            set_field(_f, wx, wy, STATE_DEAD);
         }
     }
 
@@ -137,19 +134,19 @@ function dead_slanting(x, y)
     {
         if (field(wx, wy) === STATE_EMPTY)
         {
-            set_field(wx, wy, STATE_DEAD);
+            set_field(_f, wx, wy, STATE_DEAD);
         }
     }
 }
 
-function draw_field()
+function draw_field(_f)
 {
     var i = 0;
     for (var y = 0; y < max_y; y++)
     {
         for (var x = 0; x < max_x; x++)
         {
-            draw_cell(x, y, _field[i++]);
+            draw_cell(x, y, _f[i++]);
         }
     }
 }
@@ -179,7 +176,7 @@ function field(x, y)
     return _field[pos];
 }
 
-function set_field(x, y, state)
+function set_field(_f, x, y, state)
 {
     var pos = x + (y * max_x);
     _field[pos] = state;
@@ -201,7 +198,7 @@ function array_clone(a)
 <body>
 <h1>chess</h1>
 <div>
-<input type="button" value="next" onclick="run(); return false;" />
+<input type="button" value="next" onclick="interval(_field); return false;" />
 </div>
 <canvas id="canv" width="1000" height="600"></canvas>
 </body>
