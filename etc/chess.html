@@ -1,0 +1,201 @@
+<html>
+<head>
+<title>chess</title>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script>
+
+var canvas;
+var ctx;
+var timer_id;
+
+var WIDTH_X = 20;
+var WIDTH_Y = 20;
+
+var STATE_EMPTY = 0;
+var STATE_PUT = 1;
+var STATE_DEAD = 2;
+
+// EMPTY, PUT, DEAD
+var color = ["#cdf", "#fda", "#aaa"];
+
+var max_x = 7;
+var max_y = 7;
+var _field = [
+ 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0
+];
+
+$(document).ready(function(){
+    canvas = $('#canv')[0];
+    ctx = canvas.getContext('2d');
+    ctx.lineWidth = 1.0;
+
+    put(2, 2);
+    put(3, 4);
+    draw_field();
+
+    timer_id = setInterval(interval, 100);
+});
+
+var count = 0;
+function interval()
+{
+    var xy = next_empty();
+
+    if (xy[0] === -1 || ++count > 100) {
+        clearInterval(timer_id);
+        return;
+    }
+
+    var prev = array_clone(_field);
+    put(xy[0], xy[1]);
+    draw_field();
+
+    _field = prev;
+}
+
+var _x = 0;
+var _y = 0;
+function next_empty()
+{
+    for ( ; _y < max_y; _y++)
+    {
+        for ( ; _x < max_x; _x++)
+        {
+            if (field(_x, _y) === STATE_EMPTY)
+            {
+                var ret = [_x, _y]
+                _x++;
+                return ret;
+            }
+        }
+        _x = 0;
+    }
+    _y = 0;
+
+    return next_empty();
+}
+
+function put(x, y)
+{
+    set_field(y, x, STATE_PUT)
+    dead_horizontal(y);
+    dead_vertical(x);
+    dead_slanting(x, y);
+}
+
+function dead_horizontal(y)
+{
+    for (var x = 0; x < max_x; x++)
+    {
+        if (field(x, y) === STATE_EMPTY)
+        {
+            set_field(x, y, STATE_DEAD);
+        }
+    }
+}
+
+function dead_vertical(x)
+{
+    for (var y = 0; y < max_y; y++)
+    {
+        if (field(x, y) === STATE_EMPTY)
+        {
+            set_field(x, y, STATE_DEAD);
+        }
+    }
+}
+
+function dead_slanting(x, y)
+{
+    var wx, wy ;
+
+    wx = x - 1;
+    wy = y - 1;
+    for ( ; wx >= 0 && wy >= 0; wx--, wy--)
+    {
+        if (field(wx, wy) === STATE_EMPTY)
+        {
+            set_field(wx, wy, STATE_DEAD);
+        }
+    }
+
+    wx = x + 1;
+    wy = y + 1;
+    for ( ; wx < max_x && wy < max_y; wx++, wy++)
+    {
+        if (field(wx, wy) === STATE_EMPTY)
+        {
+            set_field(wx, wy, STATE_DEAD);
+        }
+    }
+}
+
+function draw_field()
+{
+    var i = 0;
+    for (var y = 0; y < max_y; y++)
+    {
+        for (var x = 0; x < max_x; x++)
+        {
+            draw_cell(x, y, _field[i++]);
+        }
+    }
+}
+
+function draw_cell(x, y, state)
+{
+    ctx.fillStyle = color[state];
+    ctx.fillRect(x * WIDTH_X, y * WIDTH_Y, WIDTH_X - 2, WIDTH_Y - 2);
+}
+
+function serialize(f)
+{
+    var data = "";
+    for (var y = 0; y < f.length; y++)
+    {
+        for (var x = 0; x < f[y].length; x++)
+        {
+            data = data + f[y][x];
+        }
+    }
+    return data;
+}
+
+function field(x, y)
+{
+    var pos = x + (y * max_x);
+    return _field[pos];
+}
+
+function set_field(x, y, state)
+{
+    var pos = x + (y * max_x);
+    _field[pos] = state;
+}
+
+function array_clone(a)
+{
+    var clone = [];
+    for (var i = 0, len = a.length; i < len; i++)
+    {
+        clone[i] = a[i];
+    }
+
+    return clone;
+}
+
+</script>
+</head>
+<body>
+<h1>chess</h1>
+<canvas id="canv" width="1000" height="600"></canvas>
+</body>
+</html>
+
