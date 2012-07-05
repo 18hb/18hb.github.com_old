@@ -47,43 +47,93 @@ $(document).ready(function(){
 
     put(_field, 2, 2);
     put(_field, 3, 4);
-    draw_field(_field);
 
+    fpush(_field, -1, 0);
+
+    draw_field(_field);
 
     //interval();
     //run();
 });
 
-var count = 0;
 function run()
 {
-    count = 0;
     timer_id = setInterval(interval, 10);
 }
 
 var ans;
 
 var max = 0;
-var count = 0;
-function interval(_f, x, y)
+var current_fields = [];
+function interval()
 {
-    count++;
-    var xy = next_empty(_f, x, y);
-
-    while (xy !== null) {
-        var f = array_clone(_f);
-        put(f, xy[0], xy[1]);
-        interval(f, 0, 0);
-
-        xy = next_empty(_f, xy[0], xy[1]);
+    var _f = flast();
+    if (_f === undefined)
+    {
+        clearInterval(timer_id);
+        return;
     }
 
-    if (max <= count_queen(_f)) {
-        draw_field(_f);
-        max = count_queen(_f);
-        ans = tostring(_f);
+    var f = _f[0];
+    var x = _f[1];
+    var y = _f[2];
+
+    var xy = next_empty(f, x, y);
+
+    if (xy !== null) {
+        var nx = xy[0];
+        var ny = xy[1];
+
+        put(f, nx, ny);
+        draw_field(f);
+
+        fpush(f, -1, 0);
+    } else {
+        _f = fpop();
+        f = _f[0];
     }
-    $('#debug').html(max + "<br/>" + count + "<br/>" + ans[0] + "<br/>" + ans[1]);
+
+    var count = count_queen(f)
+    if (max < count) {
+        max = count;
+        ans = tostring(f);
+        $('#debug').html(max + "<br/>" + count + "<br/>" + ans[0] + "<br/>" + ans[1]);
+    }
+}
+
+function fpush(f, x, y)
+{
+    current_fields.push([array_clone(f), x, y]);
+}
+
+function fpop()
+{
+    var f = current_fields.pop();
+
+    if (f === undefined)
+    {
+        return f;
+    }
+    else
+    {
+    }
+
+    var _field = array_clone(f[0]);
+    var x = f[1];
+    var y = f[2];
+    return [_field, x, y];
+}
+
+function flast()
+{
+    if (current_fields.length > 0)
+    {
+        return current_fields[current_fields.length - 1];
+    }
+    else
+    {
+        return undefined;
+    }
 }
 
 function count_queen(f)
@@ -302,7 +352,8 @@ function to_xy(i)
 <body>
 <h1>chess</h1>
 <div>
-<input type="button" value="next" onclick="interval(_field, -1, 0); return false;" />
+<input type="button" value="run" onclick="run(); return false;" />
+<input type="button" value="next" onclick="interval(); return false;" />
 </div>
 <canvas id="canv" width="300" height="300" style="float: left;"></canvas>
 <div id="debug" style="float: left;"></div>
