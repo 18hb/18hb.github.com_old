@@ -22,13 +22,23 @@ var color = ["#cdf", "#fda", "#aaa"];
 var max_x = 7;
 var max_y = 7;
 var _field = [
- 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0
+];
+
+var alphabet = [
+    'l', 'h', 'i', 'k', 'o', 'a', 'v',
+    'r', 'q', 's', 'c', 'z', 'l', 'p',
+    'u', 'w', 'a', 'l', 'n', 'f', 'o',
+    't', 'y', 'k', 'a', 'j', 'e', 'h',
+    'a', 'h', 'i', 't', 's', 'y', 'd',
+    'e', 'f', 'o', 'p', 't', 'x', 'n',
+    'r', 'u', 'z', 'w', 'y', 'v', 'e'
 ];
 
 $(document).ready(function(){
@@ -48,13 +58,16 @@ var count = 0;
 function run()
 {
     count = 0;
-    timer_id = setInterval(interval, 1);
+    timer_id = setInterval(interval, 10);
 }
 
+var ans;
+
 var max = 0;
+var count = 0;
 function interval(_f, x, y)
 {
-    //$('#debug').text(x + ":" + y);
+    count++;
     var xy = next_empty(_f, x, y);
 
     while (xy !== null) {
@@ -68,8 +81,9 @@ function interval(_f, x, y)
     if (max <= count_queen(_f)) {
         draw_field(_f);
         max = count_queen(_f);
-        alert(tostring(_f));
+        ans = tostring(_f);
     }
+    $('#debug').html(max + "<br/>" + count + "<br/>" + ans[0] + "<br/>" + ans[1]);
 }
 
 function count_queen(f)
@@ -88,7 +102,29 @@ function count_queen(f)
 
 function tostring(f)
 {
-    return "";
+    var queen = [];
+    for (var i = 0, len = f.length; i < len; i++)
+    {
+        if (f[i] === STATE_PUT)
+        {
+            var xy = to_xy(i);
+            var x = xy[0] + 1;
+            var y = xy[1] + 1;
+
+            queen.push({"char": alphabet[i],  "k": x * y});
+        }
+    }
+
+    queen.sort(function(a, b) { return (a.k < b.k ? -1 : (a.k > b.k ? 1 : 0)); });
+
+    var word = [];
+    var sum = 0;
+    for (var i = 0, len = queen.length; i < len; i++)
+    {
+        word.push(queen[i]["char"] + ":" + queen[i]["k"]);
+        sum += queen[i]["k"];
+    }
+    return [word.join(" - "), sum];
 }
 
 function next_xy(x, y)
@@ -167,6 +203,16 @@ function dead_slanting(_f, x, y)
         }
     }
 
+    wx = x - 1;
+    wy = y + 1;
+    for ( ; wx >= 0 && wy < max_y; wx--, wy++)
+    {
+        if (field(_f, wx, wy) === STATE_EMPTY)
+        {
+            set_field(_f, wx, wy, STATE_DEAD);
+        }
+    }
+
     wx = x + 1;
     wy = y + 1;
     for ( ; wx < max_x && wy < max_y; wx++, wy++)
@@ -176,6 +222,17 @@ function dead_slanting(_f, x, y)
             set_field(_f, wx, wy, STATE_DEAD);
         }
     }
+
+    wx = x + 1;
+    wy = y - 1;
+    for ( ; wx < max_x && wy >= 0; wx++, wy--)
+    {
+        if (field(_f, wx, wy) === STATE_EMPTY)
+        {
+            set_field(_f, wx, wy, STATE_DEAD);
+        }
+    }
+
 }
 
 function draw_field(_f)
@@ -232,15 +289,23 @@ function array_clone(a)
     return clone;
 }
 
+function to_xy(i)
+{
+    var y = Math.floor(i / max_x);
+    var x = i % max_x;
+
+    return [x, y];
+}
+
 </script>
 </head>
 <body>
 <h1>chess</h1>
-<div id="debug"></div>
 <div>
 <input type="button" value="next" onclick="interval(_field, -1, 0); return false;" />
 </div>
-<canvas id="canv" width="1000" height="600"></canvas>
+<canvas id="canv" width="300" height="300" style="float: left;"></canvas>
+<div id="debug" style="float: left;"></div>
 </body>
 </html>
 
