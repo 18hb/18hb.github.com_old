@@ -58,7 +58,7 @@ $(document).ready(function(){
 
 function run()
 {
-    timer_id = setInterval(interval, 10);
+    timer_id = setInterval(interval, 50);
 }
 
 var ans;
@@ -67,7 +67,7 @@ var max = 0;
 var current_fields = [];
 function interval()
 {
-    var _f = flast();
+    var _f = fpop();
     if (_f === undefined)
     {
         clearInterval(timer_id);
@@ -84,13 +84,12 @@ function interval()
         var nx = xy[0];
         var ny = xy[1];
 
+        fpush(f, nx, ny);
+
         put(f, nx, ny);
         draw_field(f);
 
         fpush(f, -1, 0);
-    } else {
-        _f = fpop();
-        f = _f[0];
     }
 
     var count = count_queen(f)
