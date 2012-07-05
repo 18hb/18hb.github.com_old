@@ -58,7 +58,7 @@ $(document).ready(function(){
 
 function run()
 {
-    timer_id = setInterval(interval, 50);
+    timer_id = setInterval(interval, 1);
 }
 
 var ans;
@@ -89,13 +89,18 @@ function interval()
         put(f, nx, ny);
         draw_field(f);
 
-        fpush(f, -1, 0);
+        // もともとこれだったけど、
+        // いらない（無駄な過去に行った重複の探索だと判断）
+        // x, yより後ろを探索すれば良い
+        //fpush(f, -1, 0); 
+        fpush(f, x, y);
     }
 
     var count = count_queen(f)
     if (max < count) {
         max = count;
         ans = tostring(f);
+        //ans = [1, 1];
         $('#debug').html(max + "<br/>" + count + "<br/>" + ans[0] + "<br/>" + ans[1]);
     }
 }
@@ -294,6 +299,15 @@ function draw_field(_f)
             draw_cell(x, y, _f[i++]);
         }
     }
+
+//    var len = current_fields.length;
+//    var graph  = "";
+//    for (var i = 0; i < len; i++)
+//    {
+//        graph += "*";
+//    }
+//
+//    $('#debug').html(graph);
 }
 
 function draw_cell(x, y, state)
