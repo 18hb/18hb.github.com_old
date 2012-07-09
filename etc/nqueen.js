@@ -14,19 +14,18 @@ var STATE_HOT = 3;
 var color = ["#cdf", "#fda", "#bbb", "#fa0"];
 var color_hot = "";
 
-var max_x = 10;
-var max_y = 10;
+var max_x = 9;
+var max_y = 9;
 var _field = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0
 ];
 
 var alphabet = [
@@ -88,7 +87,7 @@ function interval()
         }
 
         put(f, nx, ny);
-        //draw_field(f, nx, ny);
+        draw_field(f, nx, ny);
 
         // もともとこれだったけど、
         // いらない（無駄な過去に行った重複の探索だと判断）
@@ -317,7 +316,7 @@ function draw_cell(x, y, state)
 
 function draw_field_thumb(f)
 {
-    var c = $('<canvas width="110" height="110" style="float: left;"></canvas>');
+    var c = $('<canvas width="100" height="100" style="float: left;"></canvas>');
     var _canvas = $(c)[0];
     var _ctx = _canvas.getContext('2d');
 
