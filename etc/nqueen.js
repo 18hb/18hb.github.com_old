@@ -14,18 +14,16 @@ var STATE_HOT = 3;
 var color = ["#cdf", "#fda", "#bbb", "#fa0"];
 var color_hot = "";
 
-var max_x = 9;
-var max_y = 9;
+var max_x = 7;
+var max_y = 7;
 var _field = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0
 ];
 
 var alphabet = [
@@ -42,8 +40,8 @@ $(document).ready(function(){
     canvas = $('#canv')[0];
     ctx = canvas.getContext('2d');
 
-    put(_field, 2, 2);
-    put(_field, 3, 4);
+    //put(_field, 2, 2);
+    //put(_field, 3, 4);
 
     fpush(_field, -1, 0);
 
@@ -57,19 +55,23 @@ $(document).ready(function(){
 function run()
 {
     timer_id = setInterval(interval, 1);
+    //while (interval()) {
+    //}
 }
 
+var loop = 0;
 var max = 0;
 var current_fields = [];
 
 function interval()
 {
+    loop++;
     var _f = fpop();
     if (_f === undefined)
     {
         clearInterval(timer_id);
-        alert("end");
-        return;
+        alert(loop);
+        return false;
     }
 
     var f = _f[0];
@@ -98,7 +100,10 @@ function interval()
         }
     }
 
-    var count = count_queen(f)
+    var count = count_queen(f);
+    if (max < count) {
+        $('#ans_thumb').empty();
+    }
     if (max <= count) {
         max = count;
         //var ans = tostring(f);
@@ -106,6 +111,8 @@ function interval()
         draw_field_thumb(f);
         $('#debug').html(max + "<br/>" + count + "<br/>" + ans[0] + "<br/>" + ans[1]);
     }
+
+    return true;
 }
 
 function fpush(f, x, y)
@@ -390,7 +397,7 @@ function reset()
 {
     clearInterval(timer_id);
 
-    max = 0;
+    max = loop = 0;
     current_fields = [];
 
     fpush(_field, -1, 0);
